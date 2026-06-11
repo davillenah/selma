@@ -1,0 +1,15 @@
+{
+  "description": "Thermal withstand constants (k values) for short-circuit calculations according to AEA 90364",
+  "file": "aea90364_constants.json",
+
+  "k_values": {
+    "Cu": {
+      "PVC": 115,
+      "XLPE": 143
+    },
+    "Al": {
+      "PVC": 76,
+      "XLPE": 94
+    }
+  }
+}
