@@ -1,4 +1,4 @@
-"""file: src/selma/__main__.py
+"""file: src/selma/public_api.py
 """
 
 from .sizing import SelmaEngine

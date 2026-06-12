@@ -1,5 +1,4 @@
-"""
-file: src/selma/exporters/common.py
+"""file: src/selma/exporters/common.py
 
 Shared helpers for SELMA markdown exporters.
 """
@@ -15,10 +14,10 @@ JsonDict = dict[str, Any]
 
 def read_template() -> str:
     """Load the bundled markdown template."""
-    template = files("selma.templates").joinpath("DV-E-LV-MC-Wires.md")
+    template = files("selma.exporters.templates").joinpath("detailed_report.md")
 
     if not template.is_file():
-        msg = "Template not found inside package: selma.templates/DV-E-LV-MC-Wires.md"
+        msg = "Template not found inside package: selma.exporters.templates/detailed_report.md"
         raise FileNotFoundError(msg)
 
     return template.read_text(encoding="utf-8")
@@ -76,7 +75,7 @@ def safe_str(value: Any, fallback: str = "-") -> str:
     if value is None:
         return fallback
     text = str(value).strip()
-    return text if text else fallback
+    return text or fallback
 
 
 def extract_section_mm2(cable_str: str) -> str:
@@ -140,10 +139,7 @@ def build_load_input_string(trace: JsonDict) -> str:
         return "-"
 
     value = float(load_value)
-    if value.is_integer():
-        value_str = str(int(value))
-    else:
-        value_str = format_float(value, 3)
+    value_str = str(int(value)) if value.is_integer() else format_float(value, 3)
 
     return f"{value_str} {load_unit}"
 
@@ -338,11 +334,7 @@ def normalize_purpose(purpose: Any) -> tuple[str, str | None]:
     if isinstance(purpose, dict):
         p_type = str(purpose.get("type", "")).strip().lower()
         subtype_raw = purpose.get("subtype")
-        p_subtype = (
-            str(subtype_raw).strip().lower()
-            if subtype_raw is not None
-            else None
-        )
+        p_subtype = str(subtype_raw).strip().lower() if subtype_raw is not None else None
         return p_type, p_subtype
 
     return str(purpose).strip().lower(), None
@@ -409,11 +401,7 @@ def get_vdrop_limit_text(purpose: Any, trace: JsonDict) -> str:
     """Return the admissible voltage-drop limit in a user-facing way."""
     p_type, p_subtype = normalize_purpose(purpose)
     explicit_limit = trace.get("max_voltage_drop_pct")
-    limit_str = (
-        f"{format_trace_float(explicit_limit, 2)}%"
-        if explicit_limit is not None
-        else "-"
-    )
+    limit_str = f"{format_trace_float(explicit_limit, 2)}%" if explicit_limit is not None else "-"
 
     if p_type == "board":
         return f"{limit_str} (alimentación de tablero)"
@@ -435,11 +423,7 @@ def build_phase_network_label(trace: JsonDict) -> str:
     phase = str(trace.get("phase_type", "")).strip().upper()
     voltage = trace.get("voltage_v", None)
 
-    voltage_text = (
-        f"{format_trace_int(voltage)} V"
-        if voltage is not None
-        else "- V"
-    )
+    voltage_text = f"{format_trace_int(voltage)} V" if voltage is not None else "- V"
 
     if phase == "3PH":
         return f"{voltage_text} (Trifásico)"
@@ -506,7 +490,7 @@ def build_motor_or_margin_note(trace: JsonDict) -> str:
                 parts.append(
                     "Factor reglamentario aplicado: "
                     f"{format_trace_float(motor_factor, 2)} → "
-                    f"$I_{{B,reg}} = \\mathbf{{{format_trace_float(ib_reg, 2)} A}}$"
+                    f"$I_{{B,reg}} = \\mathbf{{{format_trace_float(ib_reg, 2)} A}}$",
                 )
         except (TypeError, ValueError):
             pass
@@ -516,12 +500,12 @@ def build_motor_or_margin_note(trace: JsonDict) -> str:
             if float(margin) != 1.0:
                 parts.append(
                     f"Margen de diseño: {format_trace_float(margin, 2)} → "
-                    f"$I_{{B,d}} = \\mathbf{{{format_trace_float(ib_design, 2)} A}}$"
+                    f"$I_{{B,d}} = \\mathbf{{{format_trace_float(ib_design, 2)} A}}$",
                 )
             else:
                 parts.append(
                     "Corriente de proyecto corregida: "
-                    f"$I_{{B,d}} = \\mathbf{{{format_trace_float(ib_design, 2)} A}}$"
+                    f"$I_{{B,d}} = \\mathbf{{{format_trace_float(ib_design, 2)} A}}$",
                 )
         except (TypeError, ValueError):
             pass
@@ -597,42 +581,4 @@ def build_final_current_capacity(trace: JsonDict) -> str:
 
 def build_differential_obligation_text() -> str:
     """Return the regulatory differential note."""
-    return "≤ 30 mA (Obligatoria en circuitos terminales según AEA)"
-
-# ============================================================
-# MISSING HELPERS FOR VISUAL REPORT
-# ============================================================
-
-def build_ampacity_formula(
-    iz_table: Any,
-    trace: JsonDict,
-    corrected_value: Any,
-) -> str:
-    if iz_table is None or corrected_value is None:
-        return "-"
-
-    factors_str = "×".join(
-        [
-            format_trace_float(trace.get("flexible_cable_ampacity_factor"), 2, "1.00"),
-            format_trace_float(trace.get("f_temp"), 3, "1.000"),
-            format_trace_float(trace.get("f_group"), 3, "1.000"),
-            format_trace_float(trace.get("f_soil"), 3, "1.000"),
-            format_trace_float(trace.get("f_depth"), 3, "1.000"),
-            format_trace_float(trace.get("f_parallel"), 3, "1.000"),
-        ],
-    )
-
-    n_parallel = int(trace.get("parallels", 1))
-
-    return (
-        f"{format_trace_float(iz_table, 3)} A × {factors_str} × {n_parallel} = "
-        f"{format_trace_float(corrected_value, 3)} A"
-    )
-
-
-def build_final_current_capacity(trace: JsonDict) -> str:
-    return format_trace_float(trace.get("final_Iz_corrected_total_a"), 3)
-
-
-def build_differential_obligation_text() -> str:
     return "≤ 30 mA (Obligatoria en circuitos terminales según AEA)"

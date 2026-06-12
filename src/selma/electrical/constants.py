@@ -1,5 +1,4 @@
-"""
-file: engine/sources/constants.py
+"""file: engine/sources/constants.py
 
 Centralized constants for the wire sizing engine.
 
@@ -26,17 +25,47 @@ Includes:
 
 from __future__ import annotations
 
-
 # ============================================================
 # PROTECTION DEVICES (COMMERCIAL SERIES)
 # ============================================================
 
 DEFAULT_PROTECTION_RATINGS_A: list[int] = [
-    1, 2, 3, 4, 6, 10, 13, 16, 20, 25,
-    32, 40, 50, 63, 80, 100, 125, 160,
-    200, 225, 250, 315, 400, 500, 630,
-    700, 800, 1000, 1250, 1600, 2000,
-    2500, 3200, 4000, 5000, 6300,
+    1,
+    2,
+    3,
+    4,
+    6,
+    10,
+    13,
+    16,
+    20,
+    25,
+    32,
+    40,
+    50,
+    63,
+    80,
+    100,
+    125,
+    160,
+    200,
+    225,
+    250,
+    315,
+    400,
+    500,
+    630,
+    700,
+    800,
+    1000,
+    1250,
+    1600,
+    2000,
+    2500,
+    3200,
+    4000,
+    5000,
+    6300,
 ]
 
 MCB_MAX_CURRENT_A: int = 63

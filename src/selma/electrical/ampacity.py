@@ -1,5 +1,4 @@
-"""
-file: src/selma/tables/ampacity.py
+"""file: src/selma/tables/ampacity.py
 
 Ampacity table lookup utilities.
 """
@@ -9,19 +8,18 @@ from __future__ import annotations
 from typing import Any
 
 # ✅ FIX IMPORT
-from ..models.schemas import AmpacityRequest
-
+from ..models.domains import AmpacityRequest
 
 # ============================================================
 # TABLE LOOKUPS
 # ============================================================
+
 
 def find_ampacity_rows(
     wires_tables: dict[str, Any],
     req: AmpacityRequest,
 ) -> list[dict[str, Any]]:
     """Return ampacity rows for a material, insulation and method family."""
-
     materials = wires_tables.get("materials", {})
     mat_block = materials.get(req.material)
 
@@ -30,15 +28,12 @@ def find_ampacity_rows(
 
     ins_block = mat_block.get(req.insulation)
     if ins_block is None:
-        raise KeyError(
-            f"Missing insulation '{req.insulation}' for material '{req.material}'"
-        )
+        raise KeyError(f"Missing insulation '{req.insulation}' for material '{req.material}'")
 
     rows = ins_block.get(req.method_family)
     if rows is None:
         raise KeyError(
-            f"Missing method family '{req.method_family}' for "
-            f"{req.material}/{req.insulation}"
+            f"Missing method family '{req.method_family}' for {req.material}/{req.insulation}",
         )
 
     return rows
@@ -54,16 +49,12 @@ def ampacity_at(
     section_mm2: float,
     column: str,
 ) -> float | None:
+    """Return ampacity for a given section and method column.
     """
-    Return ampacity for a given section and method column.
-    """
-
     for row in rows:
         if float(row["section_mm2"]) == float(section_mm2):
             if column not in row:
-                raise KeyError(
-                    f"Missing ampacity column '{column}' for section {section_mm2}"
-                )
+                raise KeyError(f"Missing ampacity column '{column}' for section {section_mm2}")
 
             value = row[column]
             return None if value is None else float(value)

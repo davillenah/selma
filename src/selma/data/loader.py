@@ -1,5 +1,4 @@
-"""
-file: src/selma/data/loaders.py
+"""file: src/selma/data/loader.py
 
 Loaders for bundled standard tables used by SELMA.
 
@@ -41,6 +40,7 @@ __all__ = [
 ]
 
 JsonDict = dict[str, Any]
+
 _RESOURCE_FILENAMES: dict[str, str] = {
     "wires": "wires.json",
     "factors": "factors.json",
@@ -49,102 +49,41 @@ _RESOURCE_FILENAMES: dict[str, str] = {
 
 
 def load_json_resource(package: str, filename: str) -> JsonDict:
-    """
-    Load a JSON resource bundled inside a package.
-
-    Parameters
-    ----------
-    package:
-        Fully qualified package name containing the JSON resource.
-    filename:
-        Resource filename to read.
-
-    Returns
-    -------
-    dict[str, Any]
-        Parsed JSON object.
-
-    Raises
-    ------
-    FileNotFoundError
-        If the resource does not exist in the package.
-    ValueError
-        If the resource is empty, invalid JSON, or its root is not an object.
-    """
     resource = files(package).joinpath(filename)
 
     if not resource.is_file():
-        msg = f"JSON resource not found: {package}:{filename}"
-        raise FileNotFoundError(msg)
+        raise FileNotFoundError(f"JSON resource not found: {package}:{filename}")
 
-    try:
-        raw_content = resource.read_text(encoding="utf-8")
-    except FileNotFoundError:
-        msg = f"JSON resource not found: {package}:{filename}"
-        raise FileNotFoundError(msg) from None
+    raw_content = resource.read_text(encoding="utf-8")
 
     if not raw_content.strip():
-        msg = f"Empty JSON resource: {package}:{filename}"
-        raise ValueError(msg)
+        raise ValueError(f"Empty JSON resource: {package}:{filename}")
 
     try:
         data = json.loads(raw_content)
     except json.JSONDecodeError as exc:
-        msg = f"Invalid JSON format in resource: {package}:{filename}"
-        raise ValueError(msg) from exc
+        raise ValueError(f"Invalid JSON format in resource: {package}:{filename}") from exc
 
     if not isinstance(data, dict):
-        msg = f"JSON root must be an object in resource: {package}:{filename}"
-        raise ValueError(msg)
+        raise ValueError(f"JSON root must be an object in resource: {package}:{filename}")
 
     return data
 
 
 def _require_keys(obj: JsonDict, keys: set[str], context: str) -> None:
-    """
-    Ensure that all required keys exist in a dictionary.
-
-    Parameters
-    ----------
-    obj:
-        Dictionary to validate.
-    keys:
-        Required keys.
-    context:
-        Human-readable validation context.
-    """
     missing = sorted(key for key in keys if key not in obj)
     if missing:
-        missing_list = ", ".join(missing)
-        msg = f"Missing keys in {context}: {missing_list}"
-        raise ValueError(msg)
+        raise ValueError(f"Missing keys in {context}: {', '.join(missing)}")
 
 
 def validate_wires_structure(wires: JsonDict) -> None:
-    """
-    Validate the minimum structure of the ampacity tables bundle.
-
-    Parameters
-    ----------
-    wires:
-        Parsed wires table object.
-    """
     _require_keys(wires, {"base_conditions", "materials"}, "wires root")
 
     if not isinstance(wires["materials"], dict):
-        msg = "wires.materials must be a dictionary"
-        raise ValueError(msg)
+        raise ValueError("wires.materials must be a dictionary")
 
 
 def validate_factors_structure(factors: JsonDict) -> None:
-    """
-    Validate the minimum structure of the correction factors bundle.
-
-    Parameters
-    ----------
-    factors:
-        Parsed factors table object.
-    """
     _require_keys(
         factors,
         {
@@ -159,54 +98,18 @@ def validate_factors_structure(factors: JsonDict) -> None:
 
 
 def validate_constants_structure(constants: JsonDict) -> None:
-    """
-    Validate the minimum structure of the constants bundle.
-
-    Parameters
-    ----------
-    constants:
-        Parsed constants table object.
-    """
     _require_keys(constants, {"k_values"}, "constants root")
 
     if not isinstance(constants["k_values"], dict):
-        msg = "constants.k_values must be a dictionary"
-        raise ValueError(msg)
+        raise ValueError("constants.k_values must be a dictionary")
 
 
 def load_standard_tables(standard: str) -> JsonDict:
-    """
-    Load and validate all packaged technical tables for a given standard.
-
-    Parameters
-    ----------
-    standard:
-        Standard identifier, for example ``"aea90364"``.
-
-    Returns
-    -------
-    dict[str, Any]
-        Dictionary with the following keys:
-
-        - ``standard``
-        - ``resources``
-        - ``wires``
-        - ``factors``
-        - ``constants``
-
-    Raises
-    ------
-    ValueError
-        If the standard identifier is invalid or if table structures are invalid.
-    FileNotFoundError
-        If one or more packaged resources are missing.
-    """
     if not isinstance(standard, str) or not standard.strip():
-        msg = "standard must be a non-empty string"
-        raise ValueError(msg)
+        raise ValueError("standard must be a non-empty string")
 
     standard_name = standard.strip().lower()
-    package_name = f"selma.data.{standard_name}"
+    package_name = f"selma.data.standards.{standard_name}"
 
     wires = load_json_resource(package_name, _RESOURCE_FILENAMES["wires"])
     factors = load_json_resource(package_name, _RESOURCE_FILENAMES["factors"])
@@ -231,17 +134,10 @@ def load_standard_tables(standard: str) -> JsonDict:
 
 
 def debug_print_loaded_tables(tables: JsonDict) -> None:
-    """
-    Print a compact summary of the loaded tables bundle.
-
-    Parameters
-    ----------
-    tables:
-        Tables bundle returned by ``load_standard_tables``.
-    """
     standard = tables.get("standard", "-")
     print(f"\nStandard: {standard}")
     print("Loaded tables:")
+
     for name in ("wires", "factors", "constants"):
         keys = list(tables.get(name, {}).keys())
         print(f" - {name}: keys = {keys}")

@@ -1,5 +1,5 @@
-from copy import deepcopy
 import re
+from copy import deepcopy
 
 import pytest
 
@@ -204,7 +204,7 @@ def build_circuits():
                 "installation": build_common_installation(),
                 "short_circuit": build_common_short_circuit(),
                 "cable": build_common_cable(),
-            }
+            },
         )
 
     return circuits
@@ -260,10 +260,14 @@ def test_single_circuit_regulatory_constraints(engine, circuit):
     assert float(trace["final_Iz_corrected_total_a"]) >= float(trace["Ib_design"])
     assert float(trace["final_protection_in_a"]) >= float(trace["Ib_design"])
     assert float(trace["final_protection_in_a"]) <= float(trace["final_Iz_corrected_total_a"])
-    assert float(trace["final_protection_i2_a"]) <= 1.45 * float(trace["final_Iz_corrected_total_a"])
+    assert float(trace["final_protection_i2_a"]) <= 1.45 * float(
+        trace["final_Iz_corrected_total_a"],
+    )
 
     assert float(trace["final_voltage_drop_pct"]) <= float(trace["max_voltage_drop_pct"])
-    assert float(result["voltage_drop_pct"]) == pytest.approx(float(trace["final_voltage_drop_pct"]))
+    assert float(result["voltage_drop_pct"]) == pytest.approx(
+        float(trace["final_voltage_drop_pct"]),
+    )
 
     assert phase_section >= float(trace["selected_by_ampacity_mm2"])
     assert phase_section >= float(trace["selected_by_vdrop_mm2"])

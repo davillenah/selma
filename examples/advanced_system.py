@@ -1,4 +1,5 @@
 from copy import deepcopy
+
 from selma import SelmaEngine
 
 engine = SelmaEngine(

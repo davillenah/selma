@@ -1,5 +1,4 @@
-"""
-file: src/selma/exporters/visual.py
+"""file: src/selma/exporters/visual.py
 
 Visual engineering trace exporter.
 """
@@ -9,7 +8,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from .common import (
+from .utils import (
     add_bullet,
     add_failed_debug_section,
     build_ampacity_formula,
@@ -182,7 +181,7 @@ def render_visual_report(results: list[JsonDict]) -> str:
             lines.append(
                 f"> **Condición Térmica:** $I_B \\le I_z'$  "
                 f"(debe cumplirse **{format_trace_float(ib_design, 2)} A ≤ "
-                f"{format_trace_float(iz_corr, 2)} A**)."
+                f"{format_trace_float(iz_corr, 2)} A**).",
             )
         lines.append("")
 
@@ -205,8 +204,7 @@ def render_visual_report(results: list[JsonDict]) -> str:
             lines,
             "Corriente de Operación Convencional ($I_2$)",
             (
-                f"$I_2 = 1,45 × I_n = "
-                f"\\mathbf{{{format_trace_float(selected_i2, 2)} A}}$"
+                f"$I_2 = 1,45 × I_n = \\mathbf{{{format_trace_float(selected_i2, 2)} A}}$"
                 if selected_i2 is not None
                 else "-"
             ),
@@ -219,14 +217,14 @@ def render_visual_report(results: list[JsonDict]) -> str:
                 f"> 1. $I_B \\le I_n \\le I_z'$  "
                 f"(**{format_trace_float(ib_design, 2)} A ≤ "
                 f"{format_trace_float(final_in, 0)} A ≤ "
-                f"{format_trace_float(iz_corr, 2)} A**)."
+                f"{format_trace_float(iz_corr, 2)} A**).",
             )
             i2_display = selected_i2 if selected_i2 is not None else None
             if i2_display is not None:
                 lines.append(
                     f"> 2. $I_2 \\le 1,45 \\times I_z'$  "
                     f"(**{format_trace_float(i2_display, 2)} A ≤ "
-                    f"{format_trace_float(1.45 * float(iz_corr), 2)} A**)."
+                    f"{format_trace_float(1.45 * float(iz_corr), 2)} A**).",
                 )
         lines.append("")
 
@@ -312,38 +310,31 @@ def render_visual_report(results: list[JsonDict]) -> str:
         lines.append("| :--- | :--- |")
         lines.append(
             f"| **Sección del Conductor** | "
-            f"**{format_trace_float(trace.get('final_section_mm2'), 1)} mm²** |"
+            f"**{format_trace_float(trace.get('final_section_mm2'), 1)} mm²** |",
         )
         lines.append(
             f"| **Protección (Calibre / Curva)** | "
             f"**{format_trace_int(trace.get('final_protection_in_a'))} A / "
-            f"{safe_str(result.get('protection_curve', '-'))}** |"
+            f"{safe_str(result.get('protection_curve', '-'))}** |",
         )
         lines.append(
-            f"| **Poder de Corte ($P_{{dCcc}}$)** | "
-            f"**{get_breaking_capacity_ka(result)} kA** |"
+            f"| **Poder de Corte ($P_{{dCcc}}$)** | **{get_breaking_capacity_ka(result)} kA** |",
         )
         lines.append(
             f"| **Caída de Tensión Final** | "
-            f"**{format_trace_float(trace.get('final_voltage_drop_pct'), 4)} %** |"
+            f"**{format_trace_float(trace.get('final_voltage_drop_pct'), 4)} %** |",
         )
         lines.append(
-            f"| **$I_z'$ (Capacidad Real)** | "
-            f"**{build_final_current_capacity(trace)} A** |"
+            f"| **$I_z'$ (Capacidad Real)** | **{build_final_current_capacity(trace)} A** |",
         )
-        lines.append(
-            f"| **Protección Diferencial** | "
-            f"**{build_differential_obligation_text()}** |"
-        )
+        lines.append(f"| **Protección Diferencial** | **{build_differential_obligation_text()}** |")
 
         governing = build_governing_criteria(trace)
         if governing != "-":
             lines.append(f"| **Criterio Gobernante** | **{governing}** |")
 
         if result.get("warning"):
-            lines.append(
-                f"| **Advertencia** | **{safe_str(result.get('warning'))}** |"
-            )
+            lines.append(f"| **Advertencia** | **{safe_str(result.get('warning'))}** |")
 
         lines.append("")
         lines.append("")

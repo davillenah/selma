@@ -1,5 +1,4 @@
-"""
-file: src/selma/factors/calculator.py
+"""file: src/selma/factors/calculator.py
 
 Factor calculation utilities for SELMA.
 """
@@ -10,13 +9,13 @@ from typing import Any
 
 # ✅ IMPORTS CORREGIDOS (ANTES: engine...)
 from ..core.normalization import parse_installation_method
-from ..tables.lookup import conservative_lookup, conservative_lookup_nested
-from ..sources.constants import SOIL_THERMAL_RESISTIVITY_BY_TYPE
-
+from .constants import SOIL_THERMAL_RESISTIVITY_BY_TYPE
+from .lookup import conservative_lookup, conservative_lookup_nested
 
 # ============================================================
 # FACTOR RESOLUTION
 # ============================================================
+
 
 def get_installation_temperature_c(installation: dict[str, Any]) -> float:
     """Return the installation temperature."""
@@ -181,7 +180,7 @@ def get_burial_depth_factor(
 def get_parallel_symmetry_factor(
     factors: dict[str, Any],
     electrical: dict[str, Any],
-    installation: dict[str, Any],
+    _installation: dict[str, Any],
 ) -> tuple[float, dict[str, Any]]:
     parallels = int(electrical.get("parallels", 1))
 

@@ -1,5 +1,4 @@
-"""
-file: src/selma/selection/sections.py
+"""file: src/selma/selection/sections.py
 
 Section selection logic for SELMA.
 """
@@ -8,13 +7,13 @@ from __future__ import annotations
 
 from typing import Any
 
-from ..models.schemas import (
+from ..models.domains import (
     AmpacitySelectionInput,
     VoltageDropSelectionInput,
 )
-from ..tables.ampacity import ampacity_at
-from ..voltage_drop.router import voltage_drop_pct
-from ..protection.protection import select_protection_for_ampacity
+from .ampacity import ampacity_at
+from .protection.selector import select_protection_for_ampacity
+from .voltage_drop.router import voltage_drop_pct
 
 JsonDict = dict[str, Any]
 
@@ -23,15 +22,13 @@ JsonDict = dict[str, Any]
 # AMPACITY + PROTECTION
 # ============================================================
 
+
 def select_section_by_ampacity_and_protection(
     selection_input: AmpacitySelectionInput,
 ) -> tuple[float, float, float, float, Any]:
+    """Select section based on ampacity and protection coordination.
     """
-    Select section based on ampacity and protection coordination.
-    """
-
     for section in selection_input.sections:
-
         # mínimo reglamentario
         if section < selection_input.min_section_mm2:
             continue
@@ -85,16 +82,14 @@ def select_section_by_ampacity_and_protection(
 # VOLTAGE DROP
 # ============================================================
 
+
 def select_section_by_voltage_drop(
     selection_input: VoltageDropSelectionInput,
 ) -> tuple[float, float]:
+    """Select section based on voltage drop criteria.
     """
-    Select section based on voltage drop criteria.
-    """
-
     # intento de menor sección que cumple
     for section in selection_input.sections:
-
         if section < selection_input.min_section_mm2:
             continue
 

@@ -1,24 +1,24 @@
 """
-file: src/selma/voltage_drop/impedance.py
+file: src/selma/electrical/voltage_drop/impedance.py
 
 Voltage drop calculation using full impedance model (R + X).
 """
 
 from __future__ import annotations
 
-from typing import Any
 from math import sqrt
+from typing import Any
 
 # ✅ FIX IMPORT
-from ..sources.constants import (
+from ..constants import (
     RHO_OHM_MM2_PER_M_20C,
     X_OHM_PER_M_DEFAULT,
 )
 
-
 # ============================================================
 # VOLTAGE DROP
 # ============================================================
+
 
 def voltage_drop_pct(
     electrical: dict[str, Any],
@@ -28,7 +28,6 @@ def voltage_drop_pct(
     section_mm2: float,
 ) -> float:
     """Calculate voltage drop percentage using full impedance model (R + X)."""
-
     # -------------------------
     # Inputs
     # -------------------------
@@ -60,10 +59,10 @@ def voltage_drop_pct(
     # -------------------------
     # Reactance
     # -------------------------
-    x_input = electrical.get("reactance_ohm_per_m", None)
+    x_input = electrical.get("reactance_ohm_per_m")
 
     if x_input is None or float(x_input) <= 0.0:
-        x_input = installation.get("reactance_ohm_per_m", None)
+        x_input = installation.get("reactance_ohm_per_m")
 
     if x_input is not None and float(x_input) > 0.0:
         x_ohm_per_m = float(x_input)
@@ -84,10 +83,7 @@ def voltage_drop_pct(
     # -------------------------
     # System factor
     # -------------------------
-    if phase == "3PH":
-        k = sqrt(3.0)
-    else:
-        k = 2.0
+    k = sqrt(3.0) if phase == "3PH" else 2.0
 
     # -------------------------
     # Voltage drop

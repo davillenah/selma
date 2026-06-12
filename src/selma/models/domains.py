@@ -1,5 +1,4 @@
-"""
-file: src/selma/models/schemas.py
+"""file: src/selma/models/domains.py
 
 Shared data models for the wire sizing engine.
 
@@ -21,7 +20,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
-
 # ============================================================
 # DATA CLASSES
 # ============================================================
@@ -31,9 +29,10 @@ from typing import Any
 class MethodSelection:
     """Represent a parsed AEA installation method.
 
-    Example
+    Example:
     -------
     ``D2-3xA`` -> ``family="D2"``, ``column="3xA"``
+
     """
 
     family: str
@@ -66,6 +65,7 @@ class ProtectionSelection:
         Reference product standard used as documentation value.
     curve:
         Simplified curve or trip type descriptor.
+
     """
 
     in_a: int
@@ -127,6 +127,7 @@ class ShortCircuitSelectionInput:
     -----
     This dataclass does not validate the input structure itself. That remains
     the responsibility of the validators and the engine.
+
     """
 
     rows: list[dict[str, Any]]

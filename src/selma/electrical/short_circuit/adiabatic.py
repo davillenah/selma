@@ -1,5 +1,5 @@
 """
-file: src/selma/short_circuit/adiabatic.py
+file: src/selma/electrical/short_circuit/adiabatic.py
 
 Short-circuit sizing helpers for the wire sizing engine.
 
@@ -14,14 +14,14 @@ from __future__ import annotations
 from math import sqrt
 from typing import Any
 
-from ..models.schemas import ShortCircuitSelectionInput
-from ..sources.constants import RHO_OHM_MM2_PER_M_20C, X_OHM_PER_M_DEFAULT
-from ..tables.ampacity import ampacity_at
-
+from ...models.domains import ShortCircuitSelectionInput
+from ..ampacity import ampacity_at
+from ..constants import RHO_OHM_MM2_PER_M_20C, X_OHM_PER_M_DEFAULT
 
 # ============================================================
 # CORE HELPERS
 # ============================================================
+
 
 def short_circuit_min_section_mm2(
     constants: dict[str, Any],
@@ -114,10 +114,10 @@ def calculate_end_of_circuit_fault_current_ka(
     r_ohm_per_m = rho / effective_section
 
     x_input = float(cable.get("reactance_ohm_per_m", 0.0) or 0.0)
-    if x_input > 0.0:
-        x_ohm_per_m = x_input
-    else:
-        x_ohm_per_m = float(X_OHM_PER_M_DEFAULT.get(material, 0.00008))
+
+    x_ohm_per_m = x_input if x_input > 0.0 else float(
+        X_OHM_PER_M_DEFAULT.get(material, 0.00008)
+    )
 
     r_cable = r_ohm_per_m * length_m
     x_cable = x_ohm_per_m * length_m
@@ -140,6 +140,7 @@ def calculate_end_of_circuit_fault_current_ka(
 # MODE-AWARE SHORT-CIRCUIT SELECTION
 # ============================================================
 
+
 def select_section_by_short_circuit_mode(
     selection_input: ShortCircuitSelectionInput,
 ) -> tuple[float, float, dict[str, Any]]:
@@ -153,11 +154,15 @@ def select_section_by_short_circuit_mode(
             sections=selection_input.sections,
             min_section_mm2=selection_input.min_section_mm2,
         )
-        return 0.0, selected_section, {
-            "short_circuit_mode": "skip",
-            "short_circuit_skipped": True,
-            "short_circuit_required_section_mm2": 0.0,
-        }
+        return (
+            0.0,
+            selected_section,
+            {
+                "short_circuit_mode": "skip",
+                "short_circuit_skipped": True,
+                "short_circuit_required_section_mm2": 0.0,
+            },
+        )
 
     if mode == "manual":
         required_section, trace = short_circuit_min_section_mm2(
@@ -219,18 +224,23 @@ def select_section_by_short_circuit_mode(
         if section >= required_section:
             return required_section, section, last_trace
 
-    return last_trace["short_circuit_required_section_mm2"], valid_sections[-1], {
-        **last_trace,
-        "short_circuit_warning": (
-            "No standard section fully satisfies board_icc adiabatic verification; "
-            "returning highest available valid section."
-        ),
-    }
+    return (
+        last_trace["short_circuit_required_section_mm2"],
+        valid_sections[-1],
+        {
+            **last_trace,
+            "short_circuit_warning": (
+                "No standard section fully satisfies board_icc adiabatic verification; "
+                "returning highest available valid section."
+            ),
+        },
+    )
 
 
 # ============================================================
 # INTERNAL HELPERS
 # ============================================================
+
 
 def _select_minimum_valid_section(
     rows: list[dict[str, Any]],
@@ -265,8 +275,7 @@ def _select_standard_section_for_requirement(
     valid_sections = [
         section
         for section in sections
-        if section >= min_section_mm2
-        and ampacity_at(rows, section, method_column) is not None
+        if section >= min_section_mm2 and ampacity_at(rows, section, method_column) is not None
     ]
     if not valid_sections:
         msg = "No valid standard sections available for short-circuit requirement"

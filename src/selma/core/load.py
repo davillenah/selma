@@ -1,15 +1,15 @@
-"""
-file: src/selma/core/load.py
+"""file: src/selma/core/load.py
 
 AGREGAR COMENTARIO
 """
 
-from typing import Any
 from math import sqrt
+from typing import Any
 
 # ============================================================
 # LOAD / CURRENT RESOLUTION
 # ============================================================
+
 
 def load_to_kva_and_ib(
     electrical: dict[str, Any],
@@ -25,6 +25,7 @@ def load_to_kva_and_ib(
     -------
     tuple[float, float, dict[str, Any]]
         Apparent power in kVA, project current in A, and a trace fragment.
+
     """
     phase = electrical["phase_type"]
     voltage_v = float(electrical["voltage_v"])
@@ -35,11 +36,7 @@ def load_to_kva_and_ib(
 
     if unit == "A":
         ib = value
-        s_kva = (
-            sqrt(3.0) * voltage_v * ib / 1000.0
-            if phase == "3PH"
-            else voltage_v * ib / 1000.0
-        )
+        s_kva = sqrt(3.0) * voltage_v * ib / 1000.0 if phase == "3PH" else voltage_v * ib / 1000.0
         return (
             s_kva,
             ib,
@@ -68,11 +65,7 @@ def load_to_kva_and_ib(
         msg = f"Unsupported load unit '{unit}'"
         raise ValueError(msg)
 
-    ib = (
-        s_kva * 1000.0 / (sqrt(3.0) * voltage_v)
-        if phase == "3PH"
-        else s_kva * 1000.0 / voltage_v
-    )
+    ib = s_kva * 1000.0 / (sqrt(3.0) * voltage_v) if phase == "3PH" else s_kva * 1000.0 / voltage_v
 
     return (
         s_kva,
@@ -84,12 +77,14 @@ def load_to_kva_and_ib(
         },
     )
 
+
 def power_to_kva_and_ib(
     electrical: dict[str, Any],
     cos_phi: float,
 ) -> tuple[float, float, dict[str, Any]]:
     """Backward-compatible alias for legacy helpers and tests."""
     return load_to_kva_and_ib(electrical, cos_phi)
+
 
 def is_single_motor_circuit(circuit: dict[str, Any]) -> bool:
     """Return whether the circuit is a single-motor feeder."""

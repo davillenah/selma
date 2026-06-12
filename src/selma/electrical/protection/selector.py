@@ -1,5 +1,4 @@
-"""
-file: src/selma/protection/protection.py
+"""file: src/selma/protection/protection.py
 
 Protección eléctrica – selección y coordinación AEA.
 """
@@ -9,16 +8,16 @@ from __future__ import annotations
 from typing import Any
 
 # ✅ FIX IMPORTS (ANTES: engine...)
-from ..models.schemas import ProtectionSelection
-from ..sources.constants import (
+from ...models.domains import ProtectionSelection
+from ..constants import (
     DEFAULT_PROTECTION_RATINGS_A,
     MCB_MAX_CURRENT_A,
 )
 
-
 # ============================================================
 # HELPERS
 # ============================================================
+
 
 def _normalize_purpose(purpose: Any) -> tuple[str, str | None]:
     if isinstance(purpose, dict):
@@ -33,6 +32,7 @@ def _normalize_purpose(purpose: Any) -> tuple[str, str | None]:
 # DEVICE
 # ============================================================
 
+
 def classify_protection_device(in_a: int) -> tuple[str, str, str]:
     if in_a <= MCB_MAX_CURRENT_A:
         return "MCB", "IEC 60898-1", "C"
@@ -46,6 +46,7 @@ def compute_i2_from_in(in_a: int) -> float:
 # ============================================================
 # GENERIC AMPACITY SELECTION
 # ============================================================
+
 
 def candidate_protection_devices(ib_design: float):
     candidates = []
@@ -64,7 +65,7 @@ def candidate_protection_devices(ib_design: float):
                 device_type=device_type,
                 standard=standard,
                 curve=curve,
-            )
+            ),
         )
 
     return candidates
@@ -75,7 +76,6 @@ def select_protection_for_ampacity(
     iz_corrected_total: float,
 ):
     for c in candidate_protection_devices(ib_design):
-
         if c.in_a > iz_corrected_total:
             continue
 
@@ -93,6 +93,7 @@ def select_protection_for_ampacity(
 # ============================================================
 # AEA DEFAULTS
 # ============================================================
+
 
 def _select_aea_nominal_rating_and_curve(
     p_type: str,
@@ -127,6 +128,7 @@ def _select_aea_nominal_rating_and_curve(
 # ============================================================
 # ✅ AEA SELECTION
 # ============================================================
+
 
 def select_protection_aea(
     circuit: dict[str, Any],

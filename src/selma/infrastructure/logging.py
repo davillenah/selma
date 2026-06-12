@@ -1,5 +1,4 @@
-"""
-file: src/selma/infrastructure/logging.py
+"""file: src/selma/infrastructure/logging.py
 wire_sizing - Logger Configuration
 version: 1.0.0
 
@@ -25,13 +24,12 @@ from __future__ import annotations
 import logging
 from pathlib import Path
 
-OUTPUT_DIR = Path(__file__).resolve().parent.parent.parent / "outputs"
+OUTPUT_DIR = Path(__file__).resolve().parent.parent.parent / "LOG"
 LOG_FILE = OUTPUT_DIR / "wire_sizing_debug.log"
 
 
 def get_logger(name: str = "wire_sizing") -> logging.Logger:
-    """
-    Create or return a configured logger.
+    """Create or return a configured logger.
 
     Parameters
     ----------
@@ -41,6 +39,7 @@ def get_logger(name: str = "wire_sizing") -> logging.Logger:
     Returns
     -------
     logging.Logger
+
     """
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 

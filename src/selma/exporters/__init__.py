@@ -1,5 +1,4 @@
-"""
-file: src/selma/exporters/__init__.py
+"""file: src/selma/exporters/__init__.py
 """
 
 from .detailed import export_detailed_report, render_detailed_report

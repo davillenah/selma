@@ -5,6 +5,48 @@ All notable changes to this project will be documented in this file.
 The format is based on **Keep a Changelog**
 and this project adheres to **Semantic Versioning (SemVer)**.
 
+## [3.1.0] - 2026-06-10
+
+### Changed
+- Major internal refactor of project structure:
+  - Introduced `electrical/` domain layer
+  - Consolidated engineering logic under cohesive modules
+  - Removed redundant naming across modules and data packages
+
+### Improved
+- Simplified module naming (removed redundant prefixes like `voltage_drop_*`)
+- Cleaner package layout aligned with domain-driven design principles
+- Improved import structure (more intuitive and maintainable)
+
+### Refactored
+- Moved:
+  - selection → electrical.conductor
+  - protection → electrical.protection
+  - voltage_drop → electrical.voltage_drop
+  - short_circuit → electrical.short_circuit
+- Renamed:
+  - service.py → sizing.py
+  - schemas.py → domain.py
+  - common.py → exporters.utils
+
+### Fixed
+- Broken imports after restructuring
+- Resource loading paths for JSON data (standards folder)
+- Missing `__init__.py` issues
+- Ruff lint errors (ARG, F, SIM, etc.)
+- Duplicate function definitions in exporters
+
+### Quality
+- Achieved full Ruff compliance:
+  - E, F, I, B, UP, ARG, RET, SIM rules
+- Maintained full test coverage:
+  - ✅ 14/14 tests passing after refactor
+- Codebase cleaned from unused variables and dead code
+
+### Notes
+- No breaking changes to public API (`SelmaEngine`)
+- Internal architecture now stable for future extensions
+
 ## [3.0.0] - 2026-06-10
 
 ### Added

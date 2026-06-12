@@ -1,5 +1,4 @@
-"""
-file: src/selma/tables/lookup.py
+"""file: src/selma/tables/lookup.py
 
 Generic lookup utilities for SELMA tables.
 """
@@ -9,8 +8,7 @@ from __future__ import annotations
 from typing import Any
 
 # ✅ FIX IMPORT
-from ..sources.constants import FLEXIBLE_CABLE_AMPACITY_FACTOR
-
+from .constants import FLEXIBLE_CABLE_AMPACITY_FACTOR
 
 # ============================================================
 # CONSTANTS
@@ -24,9 +22,9 @@ EMPTY_GROUPED_LOOKUP_TABLE_MSG = "Grouped lookup table is empty"
 # GENERIC LOOKUPS
 # ============================================================
 
+
 def conservative_lookup(table: dict[str, Any], value: float) -> float:
     """Perform a conservative lookup independent of numeric key formatting."""
-
     table_float = {float(key): raw_value for key, raw_value in table.items()}
     keys = sorted(table_float)
 
@@ -46,7 +44,6 @@ def conservative_lookup_nested(
     phase_type: str,
 ) -> float:
     """Perform a conservative lookup for nested numeric-keyed tables."""
-
     table_float = {float(key): raw_value for key, raw_value in table.items()}
     keys = sorted(table_float)
 

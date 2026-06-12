@@ -1,7 +1,6 @@
-"""
-file: src/selma/__init__.py
+"""file: src/selma/__init__.py
 """
 
-from .service import SelmaEngine
+from .sizing import SelmaEngine
 
 __all__ = ["SelmaEngine"]

@@ -1,5 +1,4 @@
-"""
-file: src/selma/service.py
+"""file: src/selma/sizing.py
 
 Application service layer for SELMA.
 
@@ -10,8 +9,9 @@ circuits according to the selected standard tables.
 from __future__ import annotations
 
 import logging
+from collections.abc import Mapping
 from pathlib import Path
-from typing import Any, Mapping
+from typing import Any
 
 from .core.load import load_to_kva_and_ib
 from .core.normalization import (
@@ -27,7 +27,18 @@ from .core.results import (
     format_protection,
     ok_result,
 )
-from .data.loaders import load_standard_tables
+from .data.loader import load_standard_tables
+from .electrical.ampacity import ampacity_at, extract_sections, find_ampacity_rows
+from .electrical.conductor import (
+    select_section_by_ampacity_and_protection,
+    select_section_by_voltage_drop,
+)
+from .electrical.constants import FLEXIBLE_CABLE_AMPACITY_FACTOR
+from .electrical.correction import compute_total_factors
+from .electrical.lookup import apply_ampacity_table_factor
+from .electrical.protection.selector import select_protection_aea
+from .electrical.short_circuit.adiabatic import select_section_by_short_circuit_mode
+from .electrical.voltage_drop.router import voltage_drop_pct
 from .exporters import (
     export_detailed_report,
     export_executive_report,
@@ -36,27 +47,16 @@ from .exporters import (
     render_executive_report,
     render_visual_report,
 )
-from .factors.calculator import compute_total_factors
 from .infrastructure.logging import get_logger
-from .models.schemas import (
+from .models.domains import (
     AmpacityRequest,
     AmpacitySelectionInput,
     ShortCircuitSelectionInput,
     VoltageDropSelectionInput,
 )
-from .protection.protection import select_protection_aea
-from .selection.sections import (
-    select_section_by_ampacity_and_protection,
-    select_section_by_voltage_drop,
-)
-from .short_circuit.adiabatic import select_section_by_short_circuit_mode
-from .sources.constants import FLEXIBLE_CABLE_AMPACITY_FACTOR
-from .tables.ampacity import ampacity_at, extract_sections, find_ampacity_rows
-from .tables.lookup import apply_ampacity_table_factor
-from .validation.validators import validate_inputs
-from .voltage_drop.router import voltage_drop_pct
+from .validation.input import validate_inputs
 
-__all__ = ["SelmaEngine", "size_power_circuit", "__version__"]
+__all__ = ["SelmaEngine", "__version__", "size_power_circuit"]
 
 __version__ = "3.0.0"
 
@@ -184,8 +184,7 @@ def size_power_circuit(
     standard: str,
     logger: logging.Logger,
 ) -> JsonDict:
-    """
-    Size a single low-voltage power circuit.
+    """Size a single low-voltage power circuit.
 
     Returns a standardized SELMA result dictionary.
     """
@@ -482,8 +481,7 @@ def size_power_circuit(
 
 
 class SelmaEngine:
-    """
-    Public SELMA application service.
+    """Public SELMA application service.
 
     This class encapsulates the selected standard tables, engine criteria,
     and the orchestration logic required to size one or multiple circuits.

@@ -1,5 +1,4 @@
-"""
-file: src/selma/voltage_drop/router.py
+"""file: src/selma/voltage_drop/router.py
 
 Voltage-drop method router.
 """
@@ -14,10 +13,10 @@ from ..voltage_drop.impedance import (
     voltage_drop_pct as voltage_drop_pct_impedance,
 )
 
-
 # ============================================================
 # METHOD RESOLUTION
 # ============================================================
+
 
 def resolve_voltage_drop_method(cable: dict[str, Any]) -> str:
     method_raw = cable.get("voltage_drop_method", "GDC")
@@ -27,8 +26,7 @@ def resolve_voltage_drop_method(cable: dict[str, Any]) -> str:
 
     if method not in valid_methods:
         raise ValueError(
-            f"Unsupported voltage_drop_method '{method_raw}'. "
-            "Use 'GDC' or 'IMPEDANCE'."
+            f"Unsupported voltage_drop_method '{method_raw}'. Use 'GDC' or 'IMPEDANCE'.",
         )
 
     return method
@@ -37,6 +35,7 @@ def resolve_voltage_drop_method(cable: dict[str, Any]) -> str:
 # ============================================================
 # ROUTER
 # ============================================================
+
 
 def voltage_drop_pct(
     electrical: dict[str, Any],

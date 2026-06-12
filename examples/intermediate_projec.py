@@ -28,7 +28,12 @@ circuits = [
             "wire_burial_depth_m": 0.0,
         },
         "short_circuit": {"mode": "skip", "Icc_kA": 4, "time_s": 0.3},
-        "cable": {"voltage_drop_method": "GDC", "reactance_ohm_per_m": 0.0, "mode": "auto", "section_mm2": None},
+        "cable": {
+            "voltage_drop_method": "GDC",
+            "reactance_ohm_per_m": 0.0,
+            "mode": "auto",
+            "section_mm2": None,
+        },
     },
     {
         "tag": "C-02",
@@ -52,7 +57,12 @@ circuits = [
             "wire_burial_depth_m": 0.0,
         },
         "short_circuit": {"mode": "skip", "Icc_kA": 4, "time_s": 0.3},
-        "cable": {"voltage_drop_method": "IMPEDANCE", "reactance_ohm_per_m": 0.08, "mode": "auto", "section_mm2": None},
+        "cable": {
+            "voltage_drop_method": "IMPEDANCE",
+            "reactance_ohm_per_m": 0.08,
+            "mode": "auto",
+            "section_mm2": None,
+        },
     },
 ]
 

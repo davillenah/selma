@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "selma"
-version = "3.0.0"
+version = "3.1.0"
 description = "Standardized Electrical Load and Modeling Assistant (SELMA)"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -23,7 +23,7 @@ keywords = [
 ]
 
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 4 - Beta",
     "Intended Audience :: Engineering",
     "License :: OSI Approved :: BSD License",
     "Programming Language :: Python :: 3.10",
@@ -49,9 +49,10 @@ where = ["src"]
 
 [tool.setuptools.package-data]
 selma = [
-    "templates/*.md",
-    "data/**/*.json"
+    "exporters/templates/*.md",
+    "data/standards/**/*.json"
 ]
+
 
 # -------------------------------------------------------
 # PYTEST
@@ -62,26 +63,67 @@ pythonpath = ["."]
 testpaths = ["tests"]
 
 # -------------------------------------------------------
-# RUFF
+# RUFF (LINT + FORMAT)
 # -------------------------------------------------------
 
 [tool.ruff]
-line-length = 100
 target-version = "py310"
+line-length = 100
 
 exclude = [
-    "tests/debug_engine.py",
-    "tests/test_config.py",
-    "tests/test_engine.py"
+    ".git",
+    "__pycache__",
+    "build",
+    "dist",
+    ".venv",
+    "venv",
 ]
 
+# -------------------------------------------------------
+# LINT RULES
+# -------------------------------------------------------
+
 [tool.ruff.lint]
-select = ["E", "F", "I", "B", "UP", "SIM"]
-ignore = ["E501"]
+
+select = [
+    "E",   # pycodestyle (errors)
+    "F",   # pyflakes
+    "I",   # imports (isort)
+    "B",   # bugbear (errores sutiles reales)
+    "UP",  # modernización (pyupgrade)
+    "ARG", # unused arguments
+    "RET", # returns
+    "SIM", # flake8-simplify (simplificación de código)
+]
+
+ignore = [
+    "E501",  # line-length manejado por formatter
+]
+
+# -------------------------------------------------------
+# PER-FILE RULES
+# -------------------------------------------------------
 
 [tool.ruff.lint.per-file-ignores]
-"tests/debug_engine.py" = ["T201"]
+
+# prints permitidos en debugging
+"tests/**/*.py" = ["T201"]
+
+# -------------------------------------------------------
+# IMPORT SORTING (ISORT)
+# -------------------------------------------------------
+
+[tool.ruff.lint.isort]
+
+known-first-party = ["selma"]
+combine-as-imports = true
+
+# -------------------------------------------------------
+# FORMATTER
+# -------------------------------------------------------
 
 [tool.ruff.format]
+
 quote-style = "double"
 indent-style = "space"
+line-ending = "auto"

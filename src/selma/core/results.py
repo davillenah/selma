@@ -1,5 +1,4 @@
-"""
-file: src/selma/core/results.py
+"""file: src/selma/core/results.py
 
 Result builders and formatting helpers for the wire sizing engine.
 
@@ -25,7 +24,6 @@ AEA alignment
 
 from typing import Any
 
-
 # ============================================================
 # INTERNAL HELPERS
 # ============================================================
@@ -42,10 +40,9 @@ def _pe_section_mm2(phase_section_mm2: float) -> float:
     """Determine PE section according to AEA simplified rule."""
     if phase_section_mm2 <= 16:
         return phase_section_mm2
-    elif phase_section_mm2 <= 35:
+    if phase_section_mm2 <= 35:
         return 16
-    else:
-        return phase_section_mm2 / 2
+    return phase_section_mm2 / 2
 
 
 # ============================================================
@@ -58,7 +55,6 @@ def format_cable(
     section_mm2: float,
 ) -> tuple[str, float]:
     """Build cable description including PE conductor."""
-
     installation = circuit.get("installation", {})
     electrical = circuit.get("electrical", {})
 
@@ -83,7 +79,6 @@ def format_protection(
     circuit: dict[str, Any],
 ) -> str:
     """Format protection output string."""
-
     if protection is None:
         return "N/A"
 
@@ -147,7 +142,6 @@ def base_output_fields(
     electrical: dict[str, Any],
 ) -> dict[str, Any]:
     """Build the base output structure shared by all results."""
-
     return {
         "tag": circuit.get("tag", "?"),
         "origin": circuit.get("origin", "-"),

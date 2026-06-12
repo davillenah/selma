@@ -1,5 +1,4 @@
-"""
-file: src/selma/exporters/detailed.py
+"""file: src/selma/exporters/detailed.py
 
 Detailed technical report exporter.
 """
@@ -9,7 +8,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from .common import (
+from .utils import (
     build_conductor_description,
     build_system_string,
     build_warning_suffix,
@@ -104,4 +103,4 @@ def render_detailed_report(results: list[JsonDict]) -> str:
 def export_detailed_report(results: list[JsonDict], output_dir: str | Path) -> Path:
     """Render and export the detailed report."""
     content = render_detailed_report(results)
-    return write_text_file(output_dir, "DV-E-LV-MC-Wires.md", content)
+    return write_text_file(output_dir, "EE-MC-WireSizing.md", content)

@@ -1,6 +1,4 @@
-
-"""
-file: src/selma/validation/validators.py
+"""file: src/selma/validation/input.py
 
 Enhanced validation with purpose {type, subtype} support.
 
@@ -18,7 +16,7 @@ ALLOWED_PURPOSE_TYPES = {
     "control",
     "signal",
     "motor",
-    "outlet",  # ✅ NUEVO
+    "outlet",
 }
 
 ALLOWED_SUBTYPES = {
@@ -59,13 +57,26 @@ ALLOWED_SOIL_TYPES = {
 }
 
 VALID_METHODS = {
-    "B1-2x", "B1-3x", "B2-2x", "B2-3x",
-    "C-2x", "C-3x", "E-2x", "E-3x",
-    "F-2x", "F-3xT", "F-3xP",
-    "G-3xH", "G-3xV",
-    "D1-2x", "D1-3x",
-    "D2-1x", "D2-2xA", "D2-2xB",
-    "D2-3xA", "D2-3xB",
+    "B1-2x",
+    "B1-3x",
+    "B2-2x",
+    "B2-3x",
+    "C-2x",
+    "C-3x",
+    "E-2x",
+    "E-3x",
+    "F-2x",
+    "F-3xT",
+    "F-3xP",
+    "G-3xH",
+    "G-3xV",
+    "D1-2x",
+    "D1-3x",
+    "D2-1x",
+    "D2-2xA",
+    "D2-2xB",
+    "D2-3xA",
+    "D2-3xB",
 }
 
 # ===============================
@@ -99,14 +110,12 @@ def _is_positive_number(value) -> bool:
 
 
 def _normalize_purpose(circuit: dict, tag: str) -> dict:
-    """
-    Normalize purpose into {type, subtype} format.
+    """Normalize purpose into {type, subtype} format.
 
     Supports:
     - string input → legacy
     - dict input → new model
     """
-
     raw = circuit.get("purpose")
 
     # -------------------------
@@ -140,9 +149,7 @@ def _normalize_purpose(circuit: dict, tag: str) -> dict:
             valid_subtypes = ALLOWED_SUBTYPES.get(p_type)
 
             if valid_subtypes and subtype not in valid_subtypes:
-                raise ValueError(
-                    f"{tag}: invalid subtype '{subtype}' for type '{p_type}'"
-                )
+                raise ValueError(f"{tag}: invalid subtype '{subtype}' for type '{p_type}'")
 
         purpose = {"type": p_type, "subtype": subtype}
 
@@ -166,7 +173,7 @@ def validate_circuit(circuit: dict) -> None:
     _require_keys(circuit, REQUIRED_CIRCUIT_KEYS, f"circuit '{tag}'")
 
     # ✅ PURPOSE NORMALIZATION (NEW CENTRAL POINT)
-    purpose = _normalize_purpose(circuit, tag)
+    _purpose = _normalize_purpose(circuit, tag)
 
     # ---- rest of your validation stays identical ----
     # 👇 no tocamos el resto (esto evita romper cosas)
@@ -222,9 +229,8 @@ def validate_circuit(circuit: dict) -> None:
     if cable["mode"] not in {"auto", "fixed"}:
         raise ValueError(f"{tag}: cable.mode must be 'auto' or 'fixed'")
 
-    if cable["mode"] == "fixed":
-        if not _is_positive_number(cable["section_mm2"]):
-            raise ValueError(f"{tag}: cable.section_mm2 must be > 0")
+    if cable["mode"] == "fixed" and not _is_positive_number(cable["section_mm2"]):
+        raise ValueError(f"{tag}: cable.section_mm2 must be > 0")
 
 
 # ===============================

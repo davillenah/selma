@@ -34,7 +34,7 @@ circuits = [
             "mode": "auto",
             "section_mm2": None,
         },
-    }
+    },
 ]
 
 results = engine.size_project(circuits)

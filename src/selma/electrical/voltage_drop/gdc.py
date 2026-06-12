@@ -1,5 +1,4 @@
-"""
-file: src/selma/voltage_drop/gdc.py
+"""file: src/selma/voltage_drop/gdc.py
 
 Simplified voltage-drop calculation using the GDC method.
 
@@ -17,12 +16,12 @@ Notes:
 - Parallel conductors increase effective section.
 - GDC can be overridden per circuit via the "cable" block.
 - Defaults are temporary and should be replaced by table-driven values.
+
 """
 
 from __future__ import annotations
 
 from typing import Any
-
 
 # ------------------------------------------------------------
 # Temporary defaults (to be replaced by table-based values)
@@ -44,6 +43,7 @@ def _normalize_phase(phase_type: str) -> str:
 # GDC RESOLUTION
 # ============================================================
 
+
 def resolve_gdc_value(
     cable: dict[str, Any],
     installation: dict[str, Any],
@@ -56,7 +56,6 @@ def resolve_gdc_value(
     2. installation["gdc_value"] (legacy support)
     3. default constants
     """
-
     # -------------------------
     # 1. Explicit value (preferred)
     # -------------------------
@@ -88,6 +87,7 @@ def resolve_gdc_value(
 # VOLTAGE DROP
 # ============================================================
 
+
 def voltage_drop_pct_gdc(
     electrical: dict[str, Any],
     installation: dict[str, Any],
@@ -96,7 +96,6 @@ def voltage_drop_pct_gdc(
     section_mm2: float,
 ) -> float:
     """Calculate voltage drop percentage using GDC method."""
-
     length_m = float(electrical["length_m"])
     voltage_v = float(electrical["voltage_v"])
     phase_type = str(electrical["phase_type"]).strip().upper()
